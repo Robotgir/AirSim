@@ -18,6 +18,10 @@ def generate_launch_description():
     publish_clock = DeclareLaunchArgument(
         "publish_clock",
         default_value='False')
+    
+    isENU_ = DeclareLaunchArgument(
+        "isENU_",
+        default_value='False')
 
     is_vulkan = DeclareLaunchArgument(
         "is_vulkan",
@@ -32,12 +36,24 @@ def generate_launch_description():
             executable='airsim_node',
             name='airsim_node',
             output='screen',
+            remappings=[
+            #    ("/airsim_node/drone_1/bottom_center_custom/Scene", "/camera"),  #uncomment for mono
+            #     ("/airsim_node/drone_1/front_left_custom/Scene","/camera/left"),
+            #     ("/airsim_node/drone_1/front_right_custom/Scene","/camera/right"),  # Remap original_topic to new_topic
+            #     ("/airsim_node/drone_1/imu/Imu","/imu")
+                ("/airsim_node/drone_1/bottom_center_custom/Scene","/camera/rgb/image_rect_color"),
+                ("/airsim_node/drone_1/bottom_center_custom/Scene/camera_info","/camera/rgb/camera_info"),  # Remap original_topic to new_topic
+                ("/airsim_node/drone_1/bottom_center_depth_custom/DepthPerspective","/camera/depth_registered/image_raw")
+                # ("/airsim_node/drone_1/lidar/lidar_1","/scan_cloud")
+                # ("/airsim_node/drone_1/odom_local_ned","/odom")
+            ],
             parameters=[{
                 'is_vulkan': False,
                 'update_airsim_img_response_every_n_sec': 0.05,
                 'update_airsim_control_every_n_sec': 0.01,
                 'update_lidar_every_n_sec': 0.01,
                 'publish_clock': LaunchConfiguration('publish_clock'),
+                'isENU_': LaunchConfiguration('isENU_'),
                 'host_ip': LaunchConfiguration('host')
             }])
 
@@ -53,6 +69,7 @@ def generate_launch_description():
     # Declare the launch options
     ld.add_action(output)
     ld.add_action(publish_clock)
+    ld.add_action(isENU_)
     ld.add_action(is_vulkan)
     ld.add_action(host)
   
