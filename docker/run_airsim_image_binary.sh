@@ -17,7 +17,7 @@ if version_less_than_equal_to $REQ_DOCKER_VERSION $docker_version; then
     DOCKER_CMD="docker run --gpus all"
 else
     # Use nvidia-docker
-    DOCKER_CMD="nvidia-docker run --runtime=nvidia"
+    DOCKER_CMD="docker run --gpus all"
 fi
 
 # this block is for running X apps in docker
@@ -62,10 +62,12 @@ done
 # set the environment varible SDL_VIDEODRIVER to SDL_VIDEODRIVER_VALUE
 # and tell the docker container to execute UNREAL_BINARY_COMMAND
 $DOCKER_CMD -it \
-    -v $(pwd)/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
+    -v $(pwd)/settings.json:/home/giridhar/Documents/AirSim/settings.json \
     -v $UNREAL_BINARY_PATH:$UNREAL_BINARY_PATH \
+    -v /usr/share/vulkan/icd.d:/usr/share/vulkan/icd.d \
     -e SDL_VIDEODRIVER=$SDL_VIDEODRIVER_VALUE \
     -e SDL_HINT_CUDA_DEVICE='0' \
+    -e XDG_RUNTIME_DIR=/run/user/$UID \
     --net=host \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
