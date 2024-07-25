@@ -47,7 +47,25 @@ set(INCLUDE_DIRS include
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
   ${OpenCV_INCLUDE_DIRS}
   )
-include_directories(${INCLUDE_DIRS})
+include_directories(
+  ${INCLUDE_DIRS}
+  ${tf2_INCLUDE_DIRS}
+  ${tf2_ros_INCLUDE_DIRS}
+  ${tf2_geometry_msgs_INCLUDE_DIRS}
+  ${rclcpp_INCLUDE_DIRS}
+  ${nav_msgs_INCLUDE_DIRS}
+  ${geographic_msgs_INCLUDE_DIRS}
+  ${std_srvs_INCLUDE_DIRS}
+  ${tf2_sensor_msgs_INCLUDE_DIRS}
+  ${rclpy_INCLUDE_DIRS}
+  ${image_transport_INCLUDE_DIRS}
+  ${geometry_msgs_INCLUDE_DIRS}
+  ${cv_bridge_INCLUDE_DIRS}
+  ${tf2_geometry_msgs_INCLUDE_DIRS}
+  ${sensor_msgs_INCLUDE_DIRS}
+  ${mavros_msgs_INCLUDE_DIRS}
+  ${airsim_interfaces_INCLUDE_DIRS}
+  )
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
 target_link_libraries(airsim_settings_parser AirLib)
@@ -56,8 +74,12 @@ add_library(pd_position_controller_simple src/pd_position_controller_simple.cpp)
 target_link_libraries(pd_position_controller_simple AirLib)
 ament_target_dependencies(pd_position_controller_simple 
   rclcpp
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
   nav_msgs
   geometry_msgs
+  sensor_msgs
   airsim_interfaces
 )
 
@@ -70,6 +92,7 @@ ament_target_dependencies(airsim_ros
   nav_msgs
   image_transport
   tf2_ros
+  tf2_geometry_msgs
   cv_bridge
   airsim_interfaces
 )
