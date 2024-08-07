@@ -43,8 +43,6 @@ USER root
 RUN sudo echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" >> /etc/apt/sources.list
 RUN sudo apt update
 RUN sudo apt install -y gcc-8 g++-8 
-
-USER ros
 	
 # RUN adduser --force-badname --disabled-password --gecos '' --shell /bin/bash airsim_user && \
 # 	echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
