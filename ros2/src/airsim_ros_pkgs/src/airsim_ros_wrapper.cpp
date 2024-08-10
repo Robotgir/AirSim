@@ -1002,8 +1002,8 @@ rclcpp::Time AirsimROSWrapper::update_state()
         vehicle_ros->env_msg_ = env_msg;
 
         // convert airsim drone state to ROS msgs
-        vehicle_ros->curr_odom_.header.frame_id = vehicle_ros->vehicle_name_;
-        vehicle_ros->curr_odom_.child_frame_id = vehicle_ros->odom_frame_id_;
+        vehicle_ros->curr_odom_.header.frame_id = vehicle_ros->odom_frame_id_;
+        vehicle_ros->curr_odom_.child_frame_id = vehicle_ros->vehicle_name_ + "/base_link";
         vehicle_ros->curr_odom_.header.stamp = vehicle_time;
     }
 
@@ -1172,9 +1172,9 @@ geometry_msgs::msg::Transform AirsimROSWrapper::get_camera_optical_tf_from_body_
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
-    vehicle_tf_msg.header.frame_id = world_frame_id_;
+    vehicle_tf_msg.header.frame_id = world_frame_id_ ;
     vehicle_tf_msg.header.stamp = nh_->now();
-    vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name_;
+    vehicle_tf_msg.child_frame_id = vehicle_ros->odom_frame_id_;
     vehicle_tf_msg.transform = get_transform_msg_from_airsim(vehicle_setting.position, vehicle_setting.rotation);
 
     if (isENU_) {
@@ -1187,7 +1187,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
 void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting)
 {
     geometry_msgs::msg::TransformStamped lidar_tf_msg;
-    lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
+    lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/base_link";
     lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + lidar_name;
     lidar_tf_msg.transform = get_transform_msg_from_airsim(lidar_setting.relative_pose.position, lidar_setting.relative_pose.orientation);
 
@@ -1201,7 +1201,7 @@ void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std
 void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting)
 {
     geometry_msgs::msg::TransformStamped static_cam_tf_body_msg;
-    static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
+    static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/base_link";
     static_cam_tf_body_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_body/static";
     static_cam_tf_body_msg.transform = get_transform_msg_from_airsim(camera_setting.position, camera_setting.rotation);
 
@@ -1301,7 +1301,7 @@ sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::stri
 {
     unused(camera_setting);
     sensor_msgs::msg::CameraInfo cam_info_msg;
-    cam_info_msg.header.frame_id ="drone_1" + camera_name + "_optical";
+    cam_info_msg.header.frame_id = camera_name + "_optical";
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
     float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
@@ -1335,13 +1335,13 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         if (curr_img_response.pixels_as_float) {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
                                                                                               curr_ros_time,
-                                                                                              "drone_1/" + curr_img_response.camera_name + "_optical"));
+                                                                                              curr_img_response.camera_name + "_optical"));
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
             image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
                                                                                         curr_ros_time,
-                                                                                        "drone_1/" + curr_img_response.camera_name + "_optical"));
+                                                                                        curr_img_response.camera_name + "_optical"));
         }
         img_response_idx_internal++;
     }
@@ -1355,7 +1355,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     unused(ros_time);
     geometry_msgs::msg::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
-    cam_tf_body_msg.header.frame_id = frame_id;
+    cam_tf_body_msg.header.frame_id = frame_id + "/base_link";
     cam_tf_body_msg.child_frame_id = frame_id + "/" + child_frame_id + "_body";
     cam_tf_body_msg.transform = get_transform_msg_from_airsim(img_response.camera_position, img_response.camera_orientation);
 
@@ -1365,7 +1365,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
 
     geometry_msgs::msg::TransformStamped cam_tf_optical_msg;
     cam_tf_optical_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
-    cam_tf_optical_msg.header.frame_id = frame_id;
+    cam_tf_optical_msg.header.frame_id = frame_id + "/" + child_frame_id + "_body";
     cam_tf_optical_msg.child_frame_id = frame_id + "/" + child_frame_id + "_optical";
     cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(cam_tf_body_msg.transform);
 
