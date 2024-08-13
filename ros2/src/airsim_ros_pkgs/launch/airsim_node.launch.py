@@ -36,17 +36,17 @@ def generate_launch_description():
             executable='airsim_node',
             name='airsim_node',
             output='screen',
-            remappings=[
-            #    ("/airsim_node/drone_1/bottom_center_custom/Scene", "/camera"),  #uncomment for mono
-            #     ("/airsim_node/drone_1/front_left_custom/Scene","/camera/left"),
-            #     ("/airsim_node/drone_1/front_right_custom/Scene","/camera/right"),  # Remap original_topic to new_topic
-            #     ("/airsim_node/drone_1/imu/Imu","/imu")
-                ("/airsim_node/drone_1/bottom_center_custom/Scene","/camera/rgb/image_rect_color"),
-                ("/airsim_node/drone_1/bottom_center_custom/Scene/camera_info","/camera/rgb/camera_info"),  # Remap original_topic to new_topic
-                ("/airsim_node/drone_1/bottom_center_depth_custom/DepthPerspective","/camera/depth_registered/image_raw")
-                # ("/airsim_node/drone_1/lidar/lidar_1","/scan_cloud")
-                # ("/airsim_node/drone_1/odom_local_ned","/odom")
-            ],
+            # remappings=[
+            # #    ("/airsim_node/drone_1/bottom_center_custom/Scene", "/camera"),  #uncomment for mono
+            # #     ("/airsim_node/drone_1/front_left_custom/Scene","/camera/left"),
+            # #     ("/airsim_node/drone_1/front_right_custom/Scene","/camera/right"),  # Remap original_topic to new_topic
+            # #     ("/airsim_node/drone_1/imu/Imu","/imu")
+            #     ("/airsim_node/drone_1/bottom_center_custom/Scene","/camera/rgb/image_rect_color"),
+            #     ("/airsim_node/drone_1/bottom_center_custom/Scene/camera_info","/camera/rgb/camera_info"),  # Remap original_topic to new_topic
+            #     ("/airsim_node/drone_1/bottom_center_depth_custom/DepthPerspective","/camera/depth_registered/image_raw")
+            #     # ("/airsim_node/drone_1/lidar/lidar_1","/scan_cloud")
+            #     # ("/airsim_node/drone_1/odom_local_ned","/odom")
+            # ],
             parameters=[{
                 'is_vulkan': False,
                 'update_airsim_img_response_every_n_sec': 0.05,
