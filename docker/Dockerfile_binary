@@ -36,9 +36,6 @@ RUN python3 -m pip install --upgrade pip && \
     pip3 install setuptools wheel && \
     pip3 install airsim
 
-# Perform actions as root
-USER root
-
 #recommended to use gcc-8 https://github.com/microsoft/AirSim/pull/3976 hence installing it
 RUN sudo echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" >> /etc/apt/sources.list
 RUN sudo apt update
@@ -58,6 +55,8 @@ COPY settings.json /home/ros/Documents/AirSim
 #ADD Documents /home/airsim_user/Documents
 
 RUN sudo chown -R ros /home/ros
+RUN echo "source /opt/ros/humble/setup.bash" >> /home/ros/.bashrc
+
 # RUN cd /home/ros/workspace/AirSim/ros2
 # RUN colcon build --cmake-args -DCMAKE_C_COMPILER=gcc-8 --cmake-args -DCMAKE_CXX_COMPILER=g++-8 --cmake-args -DCMAKE_BUILD_TYPE=Debug
 # RUN source install/setup.bash
